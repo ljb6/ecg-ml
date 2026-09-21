@@ -1,0 +1,16 @@
+# Ambiente virtual
+.venv/
+
+# Dados (mantém só a pasta via .gitkeep)
+data/*
+!data/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
