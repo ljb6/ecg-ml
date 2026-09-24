@@ -1,0 +1,81 @@
+{
+  "config": {
+    "SEED": 42,
+    "VAL_SIZE": 0.15,
+    "PESO_CLASSES": "raiz",
+    "MLP_UNIDADES": [
+      256,
+      128
+    ],
+    "MLP_DROPOUT": 0.3,
+    "CNN_FILTROS": [
+      32,
+      64,
+      128,
+      128
+    ],
+    "CNN_KERNEL": 5,
+    "CNN_DROPOUT": 0.3,
+    "EPOCAS": 40,
+    "BATCH_SIZE": 256,
+    "LEARNING_RATE": 0.001,
+    "PACIENCIA": 6,
+    "TREINAR": true,
+    "MODO_RAPIDO": false,
+    "REVOCACAO_ALVO": 0.99,
+    "N_AMOSTRAS_VAZAMENTO": 5000
+  },
+  "teste": {
+    "Sempre Normal": {
+      "acurácia": 0.828,
+      "acurácia balanceada": 0.2,
+      "macro-F1": 0.181,
+      "revocação N": 1.0,
+      "revocação S": 0.0,
+      "revocação V": 0.0,
+      "revocação F": 0.0,
+      "revocação Q": 0.0
+    },
+    "MLP": {
+      "acurácia": 0.969,
+      "acurácia balanceada": 0.877,
+      "macro-F1": 0.854,
+      "revocação N": 0.982,
+      "revocação S": 0.709,
+      "revocação V": 0.919,
+      "revocação F": 0.802,
+      "revocação Q": 0.971
+    },
+    "CNN_1D": {
+      "acurácia": 0.984,
+      "acurácia balanceada": 0.919,
+      "macro-F1": 0.914,
+      "revocação N": 0.993,
+      "revocação S": 0.797,
+      "revocação V": 0.956,
+      "revocação F": 0.858,
+      "revocação Q": 0.991
+    }
+  },
+  "triagem_cnn": {
+    "limiar": 0.015,
+    "fração revisada": 0.25502466654485656,
+    "revocação dos anormais": 0.985691573926868,
+    "precisão (marcados que eram anormais)": 0.6663084363245567,
+    "revocação S": 0.9298561151079137,
+    "revocação V": 0.994475138121547,
+    "revocação F": 0.9876543209876543,
+    "revocação Q": 0.9968905472636815
+  },
+  "vazamento": {
+    "1-NN macro-F1": 0.8891717245324786,
+    "CNN 1D macro-F1 (mesma amostra)": 0.9216567931047537,
+    "1-NN acurácia": 0.9748,
+    "distância mediana ao vizinho mais próximo": 0.31663207709789276,
+    "distância mediana a um batimento qualquer da mesma classe": 2.9046401977539062
+  },
+  "epocas_treinadas": {
+    "MLP": 33,
+    "CNN_1D": 31
+  }
+}
