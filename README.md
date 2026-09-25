@@ -67,6 +67,7 @@ ecg-ml/
 ├── USO_DE_IA.md              ferramentas de IA usadas e em quais partes
 ├── requirements.txt          dependências para rodar localmente
 ├── data/heartbeat/           dataset (baixado pelo notebook, fora do Git)
+├── experimentos/             scripts dos experimentos que embasaram decisões (pesos de classe, RNN)
 ├── notebooks/
 │   ├── ecg_heartbeat.ipynb   pipeline completo: dados, EDA, modelos, treino, avaliação
 │   └── test.ipynb            teste inicial de download do dataset
@@ -81,3 +82,15 @@ ecg-ml/
 - **Desbalanceamento:** cerca de 83% dos batimentos são normais. Usamos pesos de classe na perda (raiz quadrada do peso balanceado, escolhida por experimento) e avaliamos com macro-F1, revocação por classe e matriz de confusão.
 - **Triagem:** convertemos o modelo em "normal × suspeito" e escolhemos o limiar na validação para marcar pelo menos 99% dos anormais, medindo quanto o técnico precisa revisar.
 - **Vazamento:** a divisão treino/teste foi feita por batimento, não por paciente. O notebook mede esse efeito com um classificador de vizinho mais próximo, e os resultados devem ser lidos como otimistas para pacientes novos.
+- **Validação × teste:** todas as escolhas (pesos de classe, early stopping, limiar da triagem, comparação com RNN) são feitas pela macro-F1 na validação, separada do treino. O teste é usado só na avaliação final.
+
+## Experimentos complementares
+
+Scripts em `experimentos/`, com a mesma divisão e os mesmos callbacks do notebook. Rode da raiz do repositório, depois de o notebook ter baixado os dados:
+
+```bash
+python experimentos/exp_pesos.py   # pesos de classe: balanceado × raiz × nenhum (~30 min na CPU)
+python experimentos/exp_rnn.py     # GRU, GRU invertida e CNN + GRU (~1h30 na CPU)
+```
+
+Os resultados estão resumidos no notebook (seções 4 e 7.1). Os números podem variar um pouco entre máquinas.
