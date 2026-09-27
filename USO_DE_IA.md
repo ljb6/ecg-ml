@@ -9,7 +9,7 @@ Declaração exigida pelo enunciado do Trabalho Final. Cada integrante deve acre
 | Claude Code (modelo Claude Opus 5.5, Anthropic) | `experimentos/` | Scripts e execução dos experimentos de pesos de classe e de RNN (GRU, GRU invertida, CNN + GRU), a pedido do grupo após a análise do Vitor | _A preencher_ |
 | Claude Code (modelo Claude Opus 5.5, Anthropic) | `README.md`, `requirements.txt` | Instruções de execução no Colab e localmente | _A preencher_ |
 | _A preencher_ | Slides do cliente | | |
-| _A preencher_ | Ficha técnica | | |
+| Claude Code (modelo Claude Opus 5.5, Anthropic) | Ficha técnica (`docs/ficha_tecnica.html` e `.pdf`) | Redação e diagramação a partir dos resultados do notebook | _A preencher: revisão do texto e dos números_ |
 
 ## Como o grupo validou o que foi gerado
 

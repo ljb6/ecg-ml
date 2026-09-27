@@ -67,6 +67,7 @@ ecg-ml/
 ├── USO_DE_IA.md              ferramentas de IA usadas e em quais partes
 ├── requirements.txt          dependências para rodar localmente
 ├── data/heartbeat/           dataset (baixado pelo notebook, fora do Git)
+├── docs/                     ficha técnica de uma página (HTML editável e PDF)
 ├── experimentos/             scripts dos experimentos que embasaram decisões (pesos de classe, RNN)
 ├── notebooks/
 │   ├── ecg_heartbeat.ipynb   pipeline completo: dados, EDA, modelos, treino, avaliação

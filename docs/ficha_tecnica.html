@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Ficha técnica — Classificação de batimentos cardíacos</title>
+<!--
+  Fonte editável da ficha técnica. Para gerar o PDF (Windows, da raiz do repositório):
+  "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="docs\ficha_tecnica.pdf" "docs\ficha_tecnica.html"
+  Ou abra no navegador e use Imprimir > Salvar como PDF (A4, sem cabeçalho/rodapé, margens padrão).
+-->
+<style>
+  @page { size: A4; margin: 11mm 12mm; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.9pt;
+    line-height: 1.36;
+    color: #1d2330;
+  }
+  header { border-bottom: 2px solid #1f4e79; padding-bottom: 5px; margin-bottom: 7px; }
+  h1 { font-size: 15pt; margin: 0 0 2px; color: #1f4e79; letter-spacing: -0.2px; }
+  .sub { color: #4a5568; font-size: 8.6pt; }
+  .sub b { color: #1d2330; }
+  h2 {
+    font-size: 9.6pt; text-transform: uppercase; letter-spacing: 0.6px;
+    color: #1f4e79; margin: 8px 0 3px; padding-bottom: 1px; border-bottom: 1px solid #d5dde8;
+  }
+  p { margin: 0 0 4px; }
+  ul { margin: 0 0 4px; padding-left: 14px; }
+  li { margin-bottom: 1.5px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 3px 0 4px; font-size: 8.4pt; }
+  th, td { padding: 2.5px 5px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+  th { background: #eef3f9; font-weight: 600; color: #1f4e79; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.destaque td { font-weight: 700; background: #f6f9fd; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 5px; }
+  .kpi { border: 1px solid #d5dde8; border-radius: 4px; padding: 4px 6px; background: #f8fafc; }
+  .kpi .v { font-size: 13pt; font-weight: 700; color: #1f4e79; line-height: 1.1; }
+  .kpi .l { font-size: 7.6pt; color: #4a5568; line-height: 1.25; }
+  .nota { font-size: 7.8pt; color: #4a5568; }
+  figure { margin: 6px 0 0; text-align: center; }
+  figure img { height: 42mm; width: auto; max-width: 100%; }
+  figcaption { font-size: 7.8pt; color: #4a5568; margin-top: 1px; }
+  footer { margin-top: 6px; padding-top: 4px; border-top: 1px solid #d5dde8; font-size: 7.6pt; color: #4a5568; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ficha técnica — Classificação de batimentos cardíacos com Deep Learning</h1>
+  <div class="sub">
+    <b>M10 — Deep Learning · Trabalho Final · Problema 6</b> &nbsp;|&nbsp; Código: github.com/ljb6/ecg-ml<br>
+    Grupo: <b>Victor Franceschini, Gustavo Rost, Lucca Becker, Lyon Alves e Caio Murilo</b>
+  </div>
+</header>
+
+<div class="cols">
+<div>
+
+  <h2>Problema</h2>
+  <p>Uma clínica de cardiologia usa monitores Holter: são mais de 100 mil batimentos por exame de 24 h, e hoje um técnico revisa o traçado inteiro. O sistema <b>marca os batimentos suspeitos</b> para o técnico revisar só esses. É uma <b>triagem, não um diagnóstico</b>: a decisão é sempre do profissional.</p>
+  <p><b>Erro crítico:</b> o falso negativo (arritmia não marcada, que o técnico não vai olhar). O falso positivo custa só tempo de revisão.</p>
+
+  <h2>Dados</h2>
+  <ul>
+    <li><b>Fonte:</b> ECG Heartbeat Categorization (Kaggle; Kachuee et al., 2018), derivado do MIT-BIH Arrhythmia Database (PhysioNet): 47 pacientes, gravações de 1975–1979.</li>
+    <li><b>Formato:</b> cada exemplo é um batimento já recortado: 187 amostras a 125 Hz (~1,5 s), normalizadas entre 0 e 1 e completadas com zeros.</li>
+    <li><b>Tamanho:</b> 87.554 batimentos de treino e 21.892 de teste, já separados.</li>
+    <li><b>Classes (AAMI), no treino:</b> N normal 82,8% · Q desconhecido 7,3% · V ventricular 6,6% · S supraventricular 2,5% · F fusão 0,7%.</li>
+    <li><b>Divisão:</b> 15% do treino separado para validação, estratificado (74.420 / 13.134). Todas as escolhas usam a validação; o teste é usado uma única vez.</li>
+  </ul>
+
+  <h2>Arquitetura escolhida: CNN 1D</h2>
+  <ul>
+    <li>4 blocos <b>Conv1D</b> (32, 64, 128 e 128 filtros; kernel 5 = 40 ms) + BatchNorm + ReLU + MaxPool(2) → GlobalAveragePooling → Dropout 0,3 → Dense 64 → Softmax (5 classes).</li>
+    <li>143.621 parâmetros; campo receptivo de 608 ms no último bloco.</li>
+    <li><b>Treino:</b> Adam (0,001), entropia cruzada ponderada pela <b>raiz quadrada do peso balanceado</b> de cada classe, early stopping e redução da taxa de aprendizado monitorando a macro-F1 de validação. 31 épocas, ~12 min em CPU.</li>
+    <li><b>Por que CNN:</b> filtros locais compartilhados reconhecem a forma do batimento (QRS, ondas P e T) em qualquer posição. Superou a MLP (linha de base) e as variantes com RNN (GRU).</li>
+  </ul>
+
+</div>
+<div>
+
+  <h2>Métrica principal e resultado</h2>
+  <p><b>Macro-F1</b>: média simples do F1 das 5 classes. A acurácia engana, porque responder "normal" para tudo já acerta 82,8%.</p>
+
+  <table>
+    <tr><th>Modelo (conjunto de teste)</th><th class="n">Acurácia</th><th class="n">Macro-F1</th><th class="n">Revoc. S</th><th class="n">Revoc. F</th></tr>
+    <tr><td>"Sempre Normal" (referência)</td><td class="n">0,828</td><td class="n">0,181</td><td class="n">0,00</td><td class="n">0,00</td></tr>
+    <tr><td>MLP (linha de base)</td><td class="n">0,969</td><td class="n">0,854</td><td class="n">0,71</td><td class="n">0,80</td></tr>
+    <tr class="destaque"><td>CNN 1D</td><td class="n">0,984</td><td class="n">0,914</td><td class="n">0,80</td><td class="n">0,86</td></tr>
+  </table>
+  <p class="nota">Comparação com RNN, pela macro-F1 na validação: GRU 0,792 · GRU com leitura invertida 0,814 · CNN + GRU 0,870 · CNN 1D 0,917.</p>
+
+  <p><b>Triagem (normal × suspeito):</b> o batimento é marcado quando 1 − P(normal) passa de um limiar escolhido na validação para encontrar 99% dos anormais.</p>
+  <div class="kpis">
+    <div class="kpi"><div class="v">25,5%</div><div class="l">dos batimentos passam a ser revisados pelo técnico</div></div>
+    <div class="kpi"><div class="v">98,6%</div><div class="l">dos batimentos anormais são marcados (teste)</div></div>
+    <div class="kpi"><div class="v">0,99</div><div class="l">revocação da classe N; o erro mais comum é S → N (19%)</div></div>
+  </div>
+
+  <h2>Principais limitações</h2>
+  <ul>
+    <li><b>Divisão por batimento, não por paciente:</b> os mesmos pacientes estão no treino e no teste. Um classificador que só memoriza (1-NN) chega a macro-F1 de 0,889, e cada batimento de teste tem um "irmão" no treino ~9 vezes mais próximo que um batimento típico da classe. <b>Os resultados são otimistas para pacientes novos.</b></li>
+    <li><b>Representatividade:</b> 47 pacientes, um único hospital, equipamento dos anos 1970 e uma derivação. Desempenho em outros aparelhos e populações é desconhecido.</li>
+    <li><b>Classe S:</b> 19% são confundidos com normais; o recorte isolado perde a informação de prematuridade.</li>
+    <li><b>Entrada já recortada:</b> num Holter real é preciso detectar os picos R e segmentar os batimentos antes; essa etapa não foi avaliada.</li>
+    <li><b>Probabilidades não calibradas</b> (efeito dos pesos de classe): o limiar precisa ser revalidado com dados da clínica.</li>
+    <li><b>Uso clínico</b> exige piloto com exames da clínica, validação por paciente, regularização na ANVISA (software como dispositivo médico) e tratamento dos exames como dados sensíveis pela LGPD.</li>
+  </ul>
+
+</div>
+</div>
+
+<figure>
+  <img src="../results/figuras/05_matrizes_confusao.png" alt="Matrizes de confusão da MLP e da CNN 1D no teste, normalizadas por linha">
+  <figcaption>Matrizes de confusão no teste, normalizadas por linha (linha = classe real, coluna = prevista). A CNN reduz a confusão de S com N de 26% para 19% e a de F com N de 14% para 7%.</figcaption>
+</figure>
+
+<footer>
+  Pipeline completo, figuras e modelos treinados no repositório (notebook <i>ecg_heartbeat.ipynb</i>; experimentos em <i>experimentos/</i>). Números de uma execução em CPU com semente fixa; podem variar levemente entre máquinas. Uso de IA declarado em <i>USO_DE_IA.md</i>.
+</footer>
+
+</body>
+</html>
